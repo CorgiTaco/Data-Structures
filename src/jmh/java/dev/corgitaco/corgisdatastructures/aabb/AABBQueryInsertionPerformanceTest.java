@@ -20,26 +20,26 @@ public class AABBQueryInsertionPerformanceTest {
 
     @Benchmark
     public void bvhEntriesNoChecks() {
-        BVH2D<Box> boxBVH2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, entries, Integer.MAX_VALUE, 1, 5000000, true);
+        BVH2D<Box> boxBVH2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, entries, 1000000, 1, 5000, true);
     }
 
     @Benchmark
     public void bvhEntriesWithChecks() {
-        BVH2D<Box> boxBVH2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, entries, Integer.MAX_VALUE, 1, 5000000, false);
+        BVH2D<Box> boxBVH2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, entries, 1000000, 1, 5000, false);
     }
 
     @Benchmark
     public void listEntriesNoChecks() {
-        AABBQuery<Box> boxList = AABBQuery.floodAABBQueryBoxes2D(new ListBackedAABBQuery<>(), 32, entries, Integer.MAX_VALUE, 1, 5000000, false);
+        AABBQuery<Box> boxList = AABBQuery.floodAABBQueryBoxes2D(new ListBackedAABBQuery<>(), 32, entries, 1000000, 1, 5000, false);
     }
 
     @Benchmark
     public void longMapEntriesNoChecks() {
-        AABBQuery<Box> boxList = AABBQuery.floodAABBQueryBoxes2D(new LongMapBackedAABBQuery2D<>(), 32, entries, Integer.MAX_VALUE, 1, 5000000, true);
+        AABBQuery<Box> boxList = AABBQuery.floodAABBQueryBoxes2D(new LongMapBackedAABBQuery2D<>(), 32, entries, 1000000, 1, 5000, true);
     }
 
     @Benchmark
     public void longMapEntriesWithChecks() {
-        AABBQuery<Box> boxList = AABBQuery.floodAABBQueryBoxes2D(new ListBackedAABBQuery<>(), 32, entries, Integer.MAX_VALUE, 1, 5000000, false);
+        AABBQuery<Box> boxList = AABBQuery.floodAABBQueryBoxes2D(new ListBackedAABBQuery<>(), 32, entries, 1000000, 1, 5000, false);
     }
 }

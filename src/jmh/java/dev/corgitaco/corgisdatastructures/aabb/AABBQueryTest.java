@@ -24,9 +24,9 @@ import java.util.function.IntFunction;
 public class AABBQueryTest {
 
     private static final Map<String, IntFunction<AABBQuery<Box>>> AABB_QUERY_MAP = Util.make(HashMap::new, map -> {
-        map.put("list", i -> AABBQuery.floodAABBQueryBoxes2D(new ListBackedAABBQuery<>(), 42, i, Integer.MAX_VALUE, 1, 5000000, true));
-        map.put("bvh", i -> AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 42, i, Integer.MAX_VALUE, 1, 5000000, true));
-        map.put("longMap", i -> AABBQuery.floodAABBQueryBoxes2D(new LongMapBackedAABBQuery2D<>(), 42, i, Integer.MAX_VALUE, 1, 5000000, true));
+        map.put("list", i -> AABBQuery.floodAABBQueryBoxes2D(new ListBackedAABBQuery<>(), 42, i, 1000000, 1, 50000, true));
+        map.put("bvh", i -> AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 42, i, 1000000, 1, 5000, true));
+        map.put("longMap", i -> AABBQuery.floodAABBQueryBoxes2D(new LongMapBackedAABBQuery2D<>(), 42, i, 1000000, 1, 50000, true));
     });
 
     @Param(
@@ -69,18 +69,31 @@ public class AABBQueryTest {
         }
     }
 
+    @Benchmark
+    public void remove1000RandomAreas() {
+        int removedAreas = 0;
+        for (int i = 0; i < 1000; i++) {
+            SimpleBox2D bound = randomBox();
+            if(aabbQuery.removeArea(bound)) {
+                removedAreas++;
+            }
+        }
+        System.out.println("Removed areas: " + removedAreas);
+    }
+
     private @NotNull SimpleBox2D randomBox() {
-        int maxBoxSize = 5000000;
-        int minBoxSize = maxBoxSize / 3;
+        Box aabbQueryBounds = this.aabbQuery.bound();
+        if (aabbQueryBounds == null) {
+            return new SimpleBox2D(0, 0, 0, 0);
+        }
 
-        int size = Integer.MAX_VALUE - (maxBoxSize + minBoxSize);
-        double minX = random.nextDouble() * size - size / 2.0;
-        double minY = random.nextDouble() * size - size / 2.0;
-        double boxWidth = minBoxSize + random.nextDouble() * (maxBoxSize - minBoxSize);
-        double boxHeight = minBoxSize + random.nextDouble() * (maxBoxSize - minBoxSize);
-        double maxX = minX + boxWidth;
-        double maxY = minY + boxHeight;
+        double minX = aabbQueryBounds.minX() + random.nextDouble() * (aabbQueryBounds.maxX() - aabbQueryBounds.minX());
+        double minZ = aabbQueryBounds.minZ() + random.nextDouble() * (aabbQueryBounds.maxZ() - aabbQueryBounds.minZ());
+        double boxWidthX = random.nextDouble() * (aabbQueryBounds.maxX() - minX);
+        double boxWidthZ = random.nextDouble() * (aabbQueryBounds.maxZ() - minZ);
+        double maxX = minX + boxWidthX;
+        double maxZ = minZ + boxWidthZ;
 
-        return new SimpleBox2D(minX, minY, maxX, maxY);
+        return new SimpleBox2D(minX, maxZ, maxX, maxZ);
     }
 }
