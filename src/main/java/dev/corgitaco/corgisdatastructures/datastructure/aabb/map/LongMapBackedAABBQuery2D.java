@@ -2,21 +2,24 @@ package dev.corgitaco.corgisdatastructures.datastructure.aabb.map;
 
 import dev.corgitaco.corgisdatastructures.box.Box;
 import dev.corgitaco.corgisdatastructures.datastructure.aabb.AABBQuery;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 public class LongMapBackedAABBQuery2D<VALUE> implements AABBQuery<VALUE> {
-    private final Long2ObjectMap<List<Entry<VALUE>>> map = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<IntList> map = new Long2ObjectOpenHashMap<>();
+    private final Int2ObjectOpenHashMap<Entry<VALUE>> entryLookup = new Int2ObjectOpenHashMap<>();
     private final int bitShift;
     private Box bound;
+    private int entryCounter = 0;
 
     public LongMapBackedAABBQuery2D() {
         this(4);
@@ -44,22 +47,25 @@ public class LongMapBackedAABBQuery2D<VALUE> implements AABBQuery<VALUE> {
         int minChunkZ = toChunk(minZ);
         int maxChunkX = toChunk(maxX);
         int maxChunkZ = toChunk(maxZ);
+        int entryId = entryCounter++;
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
                 long key = pack(x, z);
-                List<Entry<VALUE>> entries = map.computeIfAbsent(key, k -> new ArrayList<>());
-                entries.add(createEntry(bound, value));
+                IntList entries = map.computeIfAbsent(key, k -> new IntArrayList());
+                Entry<VALUE> entry = createEntry(bound, value);
+                entries.add(entryCounter);
+                entryLookup.put(entryCounter, entry);
             }
         }
     }
 
 
-
     int toChunk(double coord) {
-        return ((int)coord) >> this.bitShift;
+        return ((int) coord) >> this.bitShift;
     }
+
     int toWorld(double coord) {
-        return ((int)coord) << this.bitShift;
+        return ((int) coord) << this.bitShift;
     }
 
     long pack(int x, int z) {
@@ -83,15 +89,21 @@ public class LongMapBackedAABBQuery2D<VALUE> implements AABBQuery<VALUE> {
             for (int x = minChunkX; x <= maxChunkX; x++) {
                 for (int z = minChunkZ; z <= maxChunkZ; z++) {
                     long key = pack(x, z);
-                    List<Entry<VALUE>> entries = map.get(key);
+                    IntList entries = map.get(key);
                     if (entries != null) {
-                        entries.removeIf(e -> overlapFunction.test(bound, e.bound()) && test.test(e.value(), value));
+                        entries.removeIf(i -> {
+                            Entry<VALUE> e = entryLookup.get(i);
+                            return overlapFunction.test(bound, e.bound()) && test.test(e.value(), value);
+                        });
                     }
                 }
             }
         } else {
-            for (List<Entry<VALUE>> entries : map.values()) {
-                entries.removeIf(e -> test.test(e.value(), value));
+            for (IntList entries : map.values()) {
+                entries.removeIf(i -> {
+                    Entry<VALUE> e = entryLookup.get(i);
+                    return test.test(e.value(), value);
+                });
             }
         }
         return false;
@@ -119,9 +131,12 @@ public class LongMapBackedAABBQuery2D<VALUE> implements AABBQuery<VALUE> {
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
                 long key = pack(x, z);
-                List<Entry<VALUE>> entries = map.get(key);
+                IntList entries = map.get(key);
                 if (entries != null) {
-                    entries.removeIf(e -> overlapFunction.test(bound, e.bound()));
+                    entries.removeIf(i -> {
+                        Entry<VALUE> e = entryLookup.get(i);
+                        return overlapFunction.test(bound, e.bound());
+                    });
                 }
             }
         }
@@ -148,9 +163,10 @@ public class LongMapBackedAABBQuery2D<VALUE> implements AABBQuery<VALUE> {
             for (int x = minChunkX; x <= maxChunkX; x++) {
                 for (int z = minChunkZ; z <= maxChunkZ; z++) {
                     long key = pack(x, z);
-                    List<Entry<VALUE>> entries = map.get(key);
+                    IntList entries = map.get(key);
                     if (entries != null) {
-                        for (Entry<VALUE> entry : entries) {
+                        for (int i : entries) {
+                            Entry<VALUE> entry = entryLookup.get(i);
                             if (overlapFunction.test(bound, entry.bound()) && test.test(entry)) {
                                 return true;
                             }
@@ -159,8 +175,9 @@ public class LongMapBackedAABBQuery2D<VALUE> implements AABBQuery<VALUE> {
                 }
             }
         } else {
-            for (List<Entry<VALUE>> entries : map.values()) {
-                for (Entry<VALUE> entry : entries) {
+            for (IntList entries : map.values()) {
+                for (int i : entries) {
+                    Entry<VALUE> entry = entryLookup.get(i);
                     if (test.test(entry)) {
                         return true;
                     }
