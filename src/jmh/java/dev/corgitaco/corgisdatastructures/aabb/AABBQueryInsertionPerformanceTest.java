@@ -30,6 +30,11 @@ public class AABBQueryInsertionPerformanceTest {
 
     @Benchmark
     public void listEntriesNoChecks() {
+        AABBQuery<Box> boxList = AABBQuery.floodAABBQueryBoxes2D(new ListBackedAABBQuery<>(), 32, entries, 1000000, 1, 5000, true);
+    }
+
+    @Benchmark
+    public void listEntriesChecks() {
         AABBQuery<Box> boxList = AABBQuery.floodAABBQueryBoxes2D(new ListBackedAABBQuery<>(), 32, entries, 1000000, 1, 5000, false);
     }
 
