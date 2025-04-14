@@ -1,7 +1,8 @@
 package dev.corgitaco.corgisdatastructures.test.bvh;
 
 import dev.corgitaco.corgisdatastructures.box.Box;
-import dev.corgitaco.corgisdatastructures.datastructure.bvh.BVH2D;
+import dev.corgitaco.corgisdatastructures.datastructure.aabb.AABBQuery;
+import dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh.BVH2D;
 import org.junit.jupiter.api.Test;
 
 public class BVHMemoryTest {
@@ -14,7 +15,7 @@ public class BVHMemoryTest {
         int size = Integer.MAX_VALUE - (maxBoxSize + minBoxSize);
         int numberOfBoxes = Integer.MAX_VALUE;
         long[] startTime = {System.nanoTime()};
-        BVH2D<Box> bvh2D = BVH2D.floodedBVH(32, numberOfBoxes, size, minBoxSize, maxBoxSize, true, false, inserted -> {
+        BVH2D<Box> bvh2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, numberOfBoxes, size, minBoxSize, maxBoxSize, true, false, inserted -> {
             if (inserted % 100000 == 0) {
                 long nanoTime = System.nanoTime();
                 double elapsedTime = (nanoTime - startTime[0]) / 1_000_000.0;
@@ -36,7 +37,7 @@ public class BVHMemoryTest {
         int size = Integer.MAX_VALUE - (maxBoxSize + minBoxSize);
         int numberOfBoxes = Integer.MAX_VALUE;
         long[] startTime = {System.nanoTime()};
-        BVH2D<Box> bvh2D = BVH2D.floodedBVH(32, numberOfBoxes, size, minBoxSize, maxBoxSize, true, true, inserted -> {
+        BVH2D<Box> bvh2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, numberOfBoxes, size, minBoxSize, maxBoxSize, true, true, inserted -> {
             if (inserted % 100000 == 0) {
                 long nanoTime = System.nanoTime();
                 double elapsedTime = (nanoTime - startTime[0]) / 1_000_000.0;

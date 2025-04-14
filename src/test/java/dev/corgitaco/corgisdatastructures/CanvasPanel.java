@@ -2,7 +2,7 @@ package dev.corgitaco.corgisdatastructures;
 
 import dev.corgitaco.corgisdatastructures.box.Box;
 import dev.corgitaco.corgisdatastructures.box.SimpleBox;
-import dev.corgitaco.corgisdatastructures.datastructure.bvh.BVH2D;
+import dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh.BVH2D;
 
 import javax.swing.*;
 import java.awt.*;

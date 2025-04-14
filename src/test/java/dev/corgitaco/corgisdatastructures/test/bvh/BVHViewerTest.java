@@ -3,7 +3,8 @@ package dev.corgitaco.corgisdatastructures.test.bvh;
 import dev.corgitaco.corgisdatastructures.CanvasPanel;
 import dev.corgitaco.corgisdatastructures.box.Box;
 import dev.corgitaco.corgisdatastructures.box.SimpleBox;
-import dev.corgitaco.corgisdatastructures.datastructure.bvh.BVH2D;
+import dev.corgitaco.corgisdatastructures.datastructure.aabb.AABBQuery;
+import dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh.BVH2D;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -28,7 +29,7 @@ public class BVHViewerTest {
 
         int numberOfBoxes = 500000000;
 
-        BVH2D<Box> bvh2D = BVH2D.floodedBVH(32, numberOfBoxes, size, minBoxSize, maxBoxSize, true, false, inserted -> false);
+        BVH2D<Box> bvh2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, numberOfBoxes, size, minBoxSize, maxBoxSize, true, false, inserted -> false);
 
         if (false) {
             int range = 10000000;

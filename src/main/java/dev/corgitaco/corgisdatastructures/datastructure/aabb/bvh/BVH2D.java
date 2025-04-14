@@ -1,32 +1,38 @@
-package dev.corgitaco.corgisdatastructures.datastructure.bvh;
+package dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh;
 
 import dev.corgitaco.corgisdatastructures.box.Box;
-import dev.corgitaco.corgisdatastructures.box.SimpleBox;
+import dev.corgitaco.corgisdatastructures.box.BoxFactory;
+import dev.corgitaco.corgisdatastructures.box.SimpleBox2D;
+import dev.corgitaco.corgisdatastructures.datastructure.aabb.AABBQuery;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
+import java.util.function.*;
 
-public class BVH3D<VALUE> implements BVH<VALUE> {
+public class BVH2D<VALUE> implements AABBQuery<VALUE> {
     private static final int DEFAULT_MAX_ENTRIES = 4;
     private static final int DEFAULT_CHILD_COUNT = 2;
     private Node root;
+    private int size;
 
-    public BVH3D() {
+    public BVH2D() {
         this(DEFAULT_MAX_ENTRIES, DEFAULT_CHILD_COUNT);
     }
 
-    public BVH3D(int maxEntries, int childCount) {
+    public BVH2D(int maxEntries, int childCount) {
         this.root = new Node(null, 0, maxEntries, childCount);
     }
 
     public void insertDirect(Box bound, VALUE value) {
+        size++;
         root = root.insert(bound, value);
+    }
+
+    @Override
+    public Box convert(Box box) {
+        return BoxFactory.createBox2D(false, box);
     }
 
     public boolean removeValue(@Nullable Box bound, VALUE value, OverlapFunction overlapFunction, BiPredicate<VALUE, VALUE> test) {
@@ -36,6 +42,7 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
             if (!test.test(entry.value(), value)) {
                 node.insert(entry.bound(), entry.value());
             } else {
+                this.size--;
                 changed[0] = true;
             }
             return false;
@@ -58,6 +65,7 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
             if (!overlapFunction.test(entry.bound(), bound)) {
                 node.insert(entry.bound(), entry.value());
             } else {
+                this.size--;
                 changed[0] = true;
             }
             return false;
@@ -85,7 +93,7 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
 
     @Override
     public OverlapFunction overlapFunction() {
-        return Box::intersects;
+        return Box::intersects2D;
     }
 
     @Override
@@ -93,7 +101,21 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
         this.root.nodeView(bound, overlapFunction, maxDepth, consumer);
     }
 
+    public int size() {
+        return size;
+    }
+
+    @Override
+    @Nullable
+    public Box bound() {
+        if (this.root == null) {
+            return null;
+        }
+        return this.root.nodeBound;
+    }
+
     class Node {
+
         private Entry<VALUE>[] entries;
         private final int maxEntries;
         private final Node[] children;
@@ -104,7 +126,7 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
 
         public Node(Box bound, int depth, int maxEntries, int childCount) {
             this.nodeBound = bound;
-            this.entries = uncheckedCast(Array.newInstance(Node.class, maxEntries));
+            this.entries = new Entry[maxEntries];
             this.maxEntries = maxEntries;
             this.children = uncheckedCast(Array.newInstance(Node.class, childCount));
             this.childCount = childCount;
@@ -120,7 +142,7 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
         public Node insert(Box newBound, VALUE value) {
             if (children[0] == null) {
                 if (entryCount < DEFAULT_MAX_ENTRIES) {
-                    entries[entryCount++] = BVH3D.this.createEntry(newBound, value);
+                    entries[entryCount++] = BVH2D.this.createEntry(newBound, value);
                     this.nodeBound = (this.nodeBound == null) ? newBound : this.nodeBound.encapsulate(newBound);
                     return this;
                 } else {
@@ -129,7 +151,7 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
                 }
             } else {
                 int bestChildIndex = -1;
-                double minVolumeIncrease = Double.MAX_VALUE;
+                double minAreaIncrease = Double.MAX_VALUE;
 
                 for (int i = 0; i < DEFAULT_CHILD_COUNT; i++) {
                     Node child = children[i];
@@ -139,11 +161,11 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
                         if (originalChildBound != null) {
                             combinedBound = originalChildBound.encapsulate(newBound);
                         }
-                        double volumeIncrease = (combinedBound.xSpan() * combinedBound.ySpan() * combinedBound.zSpan()) -
-                                (originalChildBound != null ? originalChildBound.xSpan() * originalChildBound.ySpan() * originalChildBound.zSpan() : 0);
+                        double areaIncrease = (combinedBound.xSpan() * combinedBound.zSpan()) -
+                                (originalChildBound != null ? originalChildBound.xSpan() * originalChildBound.zSpan() : 0);
 
-                        if (volumeIncrease < minVolumeIncrease) {
-                            minVolumeIncrease = volumeIncrease;
+                        if (areaIncrease < minAreaIncrease) {
+                            minAreaIncrease = areaIncrease;
                             bestChildIndex = i;
                         } else if (bestChildIndex == -1) {
                             bestChildIndex = i;
@@ -156,7 +178,7 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
                 if (bestChildIndex != -1) {
                     if (children[bestChildIndex] == null) {
                         children[bestChildIndex] = new Node(newBound, this.depth + 1, this.maxEntries, this.childCount);
-                        children[bestChildIndex].entries[children[bestChildIndex].entryCount++] = BVH3D.this.createEntry(newBound, value);
+                        children[bestChildIndex].entries[children[bestChildIndex].entryCount++] = BVH2D.this.createEntry(newBound, value);
                     } else {
                         children[bestChildIndex].insert(newBound, value);
                     }
@@ -246,22 +268,17 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
 
             if (this.nodeBound != null) {
                 double xSpan = this.nodeBound.xSpan();
-                double ySpan = this.nodeBound.ySpan();
                 double zSpan = this.nodeBound.zSpan();
 
-                if (ySpan > xSpan && ySpan > zSpan) {
-                    splitAxis = 1;
-                } else if (zSpan > xSpan) {
+                if (zSpan > xSpan) {
                     splitAxis = 2;
                 }
             }
 
             final int sortAxis = splitAxis;
             Arrays.sort(entries, 0, entryCount, (e1, e2) -> {
-                double center1 = (sortAxis == 0) ? e1.bound().center().x() :
-                        (sortAxis == 1) ? e1.bound().center().y() : e1.bound().center().z();
-                double center2 = (sortAxis == 0) ? e2.bound().center().x() :
-                        (sortAxis == 1) ? e2.bound().center().y() : e2.bound().center().z();
+                double center1 = (sortAxis == 0) ? e1.bound().center().x() : e1.bound().center().z();
+                double center2 = (sortAxis == 0) ? e2.bound().center().x() : e2.bound().center().z();
                 return Double.compare(center1, center2);
             });
 
@@ -278,28 +295,5 @@ public class BVH3D<VALUE> implements BVH<VALUE> {
             this.entryCount = 0;
             updateBounds();
         }
-    }
-
-    public static BVH3D<Box> floodedBVH(long seed, int numberOfBoxes, int size, int minBoxSize, int maxBoxSize, boolean skipChecks) {
-        Random random = new Random(seed);
-        BVH3D<Box> bvh3D = new BVH3D<>();
-        for (int i = 0; i < numberOfBoxes; i++) {
-            double minX = random.nextDouble() * size - size / 2.0;
-            double minY = random.nextDouble() * size - size / 2.0;
-            double minZ = random.nextDouble() * size - size / 2.0;
-            double boxWidth = minBoxSize + random.nextDouble() * (maxBoxSize - minBoxSize);
-            double boxHeight = minBoxSize + random.nextDouble() * (maxBoxSize - minBoxSize);
-            double boxDepth = minBoxSize + random.nextDouble() * (maxBoxSize - minBoxSize);
-            double maxX = minX + boxWidth;
-            double maxY = minY + boxHeight;
-            double maxZ = minZ + boxDepth;
-
-            SimpleBox box = new SimpleBox(minX, minY, minZ, maxX, maxY, maxZ);
-            if (skipChecks || !bvh3D.hasAny(box)) {
-                bvh3D.insertDirect(box, box);
-            }
-        }
-
-        return bvh3D;
     }
 }

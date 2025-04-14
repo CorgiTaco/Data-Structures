@@ -19,6 +19,7 @@ dependencies {
     implementation("org.ow2.asm:asm:9.7")
     implementation("org.ow2.asm:asm-util:9.7")     // optional: for debugging / printing
     implementation("org.ow2.asm:asm-commons:9.7")  // optional: for tree API & more utilities
+    implementation("it.unimi.dsi:fastutil:8.5.15")
 }
 
 tasks.test {
