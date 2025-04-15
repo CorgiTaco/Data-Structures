@@ -1,6 +1,6 @@
 package dev.corgitaco.corgisdatastructures.datastructure.position.nearest;
 
-import dev.corgitaco.corgisdatastructures.position.Position;
+import dev.corgitaco.corgisdatastructures.coord.position.Position;
 
 import java.util.Collection;
 import java.util.Collections;

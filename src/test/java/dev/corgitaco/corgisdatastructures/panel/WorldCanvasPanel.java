@@ -1,8 +1,7 @@
 package dev.corgitaco.corgisdatastructures.panel;
 
-import dev.corgitaco.corgisdatastructures.box.Box;
-import dev.corgitaco.corgisdatastructures.box.SimpleBox;
-import dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh.BVH2D;
+import dev.corgitaco.corgisdatastructures.coord.box.Box;
+import dev.corgitaco.corgisdatastructures.coord.box.SimpleBox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +9,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class WorldCanvasPanel extends JPanel {

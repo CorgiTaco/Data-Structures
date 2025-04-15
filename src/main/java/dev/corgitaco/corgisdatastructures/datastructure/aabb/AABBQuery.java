@@ -1,9 +1,8 @@
 package dev.corgitaco.corgisdatastructures.datastructure.aabb;
 
-import dev.corgitaco.corgisdatastructures.box.Box;
-import dev.corgitaco.corgisdatastructures.box.BoxFactory;
-import dev.corgitaco.corgisdatastructures.box.SimpleBox2D;
-import dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh.BVH2D;
+import dev.corgitaco.corgisdatastructures.coord.box.Box;
+import dev.corgitaco.corgisdatastructures.coord.box.BoxFactory;
+import dev.corgitaco.corgisdatastructures.coord.box.SimpleBox2D;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

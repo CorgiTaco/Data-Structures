@@ -1,6 +1,6 @@
 package dev.corgitaco.corgisdatastructures.datastructure.aabb.list;
 
-import dev.corgitaco.corgisdatastructures.box.Box;
+import dev.corgitaco.corgisdatastructures.coord.box.Box;
 import dev.corgitaco.corgisdatastructures.datastructure.aabb.AABBQuery;
 import org.jetbrains.annotations.Nullable;
 

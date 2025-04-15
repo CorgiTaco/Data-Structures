@@ -1,6 +1,6 @@
 package dev.corgitaco.corgisdatastructures.panel;
 
-import dev.corgitaco.corgisdatastructures.box.Box;
+import dev.corgitaco.corgisdatastructures.coord.box.Box;
 import dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh.BVH2D;
 
 import java.awt.*;

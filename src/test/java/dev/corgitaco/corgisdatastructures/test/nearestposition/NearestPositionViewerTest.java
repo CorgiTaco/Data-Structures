@@ -1,10 +1,5 @@
 package dev.corgitaco.corgisdatastructures.test.nearestposition;
 
-import dev.corgitaco.corgisdatastructures.box.Box;
-import dev.corgitaco.corgisdatastructures.box.SimpleBox;
-import dev.corgitaco.corgisdatastructures.datastructure.aabb.AABBQuery;
-import dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh.BVH2D;
-import dev.corgitaco.corgisdatastructures.panel.BVHCanvasPanel;
 import dev.corgitaco.corgisdatastructures.panel.QuadTreeCanvasPanel;
 import org.junit.jupiter.api.Test;
 

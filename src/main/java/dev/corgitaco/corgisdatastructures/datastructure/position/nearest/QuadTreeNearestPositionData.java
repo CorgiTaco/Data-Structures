@@ -8,9 +8,9 @@
 
 package dev.corgitaco.corgisdatastructures.datastructure.position.nearest;
 
-import dev.corgitaco.corgisdatastructures.position.Position;
-import dev.corgitaco.corgisdatastructures.box.Box;
-import dev.corgitaco.corgisdatastructures.box.SimpleBox2D;
+import dev.corgitaco.corgisdatastructures.coord.position.Position;
+import dev.corgitaco.corgisdatastructures.coord.box.Box;
+import dev.corgitaco.corgisdatastructures.coord.box.SimpleBox2D;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;

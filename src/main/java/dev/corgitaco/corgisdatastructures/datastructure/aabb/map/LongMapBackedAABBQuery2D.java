@@ -1,6 +1,6 @@
 package dev.corgitaco.corgisdatastructures.datastructure.aabb.map;
 
-import dev.corgitaco.corgisdatastructures.box.Box;
+import dev.corgitaco.corgisdatastructures.coord.box.Box;
 import dev.corgitaco.corgisdatastructures.datastructure.aabb.AABBQuery;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

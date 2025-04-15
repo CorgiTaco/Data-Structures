@@ -8,7 +8,7 @@
 
 package dev.corgitaco.corgisdatastructures.datastructure.position.nearest;
 
-import dev.corgitaco.corgisdatastructures.position.Position;
+import dev.corgitaco.corgisdatastructures.coord.position.Position;
 
 public class QuadTreeNearestPosition<POINT extends Position> extends QuadTreeNearestPositionData<POINT, POINT> {
 

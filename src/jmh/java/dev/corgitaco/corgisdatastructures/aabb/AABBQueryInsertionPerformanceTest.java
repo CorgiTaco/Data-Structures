@@ -1,7 +1,7 @@
 package dev.corgitaco.corgisdatastructures.aabb;
 
 
-import dev.corgitaco.corgisdatastructures.box.Box;
+import dev.corgitaco.corgisdatastructures.coord.box.Box;
 import dev.corgitaco.corgisdatastructures.datastructure.aabb.AABBQuery;
 import dev.corgitaco.corgisdatastructures.datastructure.aabb.bvh.BVH2D;
 import dev.corgitaco.corgisdatastructures.datastructure.aabb.list.ListBackedAABBQuery;
