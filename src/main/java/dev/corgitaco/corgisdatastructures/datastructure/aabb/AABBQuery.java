@@ -158,24 +158,7 @@ public interface AABBQuery<VALUE> {
         VALUE value();
     }
 
-    class SimpleEntry<VALUE> implements Entry<VALUE> {
-        private final Box bound;
-        private final VALUE value;
-
-        public SimpleEntry(Box bound, VALUE value) {
-            this.bound = bound;
-            this.value = value;
-        }
-
-        @Override
-        public Box bound() {
-            return bound;
-        }
-
-        @Override
-        public VALUE value() {
-            return value;
-        }
+    record SimpleEntry<VALUE>(Box bound, VALUE value) implements Entry<VALUE> {
     }
 
     @FunctionalInterface
