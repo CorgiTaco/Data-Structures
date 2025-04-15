@@ -1,7 +1,7 @@
 package dev.corgitaco.corgisdatastructures.box;
 
-import dev.corgitaco.corgisdatastructures.Position;
-import dev.corgitaco.corgisdatastructures.SimplePosition;
+import dev.corgitaco.corgisdatastructures.position.Position;
+import dev.corgitaco.corgisdatastructures.position.SimplePosition;
 
 import java.text.DecimalFormat;
 
@@ -18,6 +18,14 @@ public interface Box {
     double maxY();
 
     double maxZ();
+
+    default Position min() {
+        return new SimplePosition(minX(), minY(), minZ());
+    }
+
+    default Position max() {
+        return new SimplePosition(maxX(), maxY(), maxZ());
+    }
 
     Box create(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
 
@@ -53,10 +61,20 @@ public interface Box {
                 this.minY() <= other.maxY() && this.maxY() >= other.minY() &&
                 this.minZ() <= other.maxZ() && this.maxZ() >= other.minZ();
     }
+    default boolean intersects(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        return this.minX() <= maxX && this.maxX() >= minX &&
+                this.minY() <= maxY && this.maxY() >= minY &&
+                this.minZ() <= maxZ && this.maxZ() >= minZ;
+    }
 
     default boolean intersects2D(Box other) {
         return this.minX() <= other.maxX() && this.maxX() >= other.minX() &&
                 this.minZ() <= other.maxZ() && this.maxZ() >= other.minZ();
+    }
+
+    default boolean intersects2D(double minX, double minZ, double maxX, double maxZ) {
+        return this.minX() <= maxX && this.maxX() >= minX &&
+                this.minZ() <= maxZ && this.maxZ() >= minZ;
     }
 
     default boolean contains(Box other) {
@@ -103,6 +121,10 @@ public interface Box {
 
     default Box encapsulate(Box other) {
         return create(Math.min(minX(), other.minX()), Math.min(minY(), other.minY()), Math.min(minZ(), other.minZ()), Math.max(maxX(), other.maxX()), Math.max(maxY(), other.maxY()), Math.max(maxZ(), other.maxZ()));
+    }
+
+    default Box encapsulate(Position position) {
+        return encapsulate(create(position.x(), position.y(), position.z(), position.x(), position.y(), position.z()));
     }
 
     default Box translate(double x, double y, double z) {

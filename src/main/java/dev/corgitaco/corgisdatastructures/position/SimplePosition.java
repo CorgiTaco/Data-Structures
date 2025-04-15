@@ -1,9 +1,16 @@
-package dev.corgitaco.corgisdatastructures;
+package dev.corgitaco.corgisdatastructures.position;
 
 public record SimplePosition(double x, double y, double z) implements Position {
+
+
     @Override
-    public boolean is2D() {
-        return false;
+    public Position as2D() {
+        return new SimplePosition2D(x, z);
+    }
+
+    @Override
+    public Position floor() {
+        return new FlooredSimplePosition3D(this.floorX(), this.floorY(), this.floorZ());
     }
 
     @Override
