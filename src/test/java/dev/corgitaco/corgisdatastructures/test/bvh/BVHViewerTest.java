@@ -27,9 +27,9 @@ public class BVHViewerTest {
 
         System.out.println(usedMemory() + " MB used");
 
-        int numberOfBoxes = 500000;
+        int numberOfBoxes = 1000000;
 
-        BVH2D<Box> bvh2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, numberOfBoxes, size, minBoxSize, maxBoxSize, false, false, inserted -> false);
+        BVH2D<Box> bvh2D = AABBQuery.floodAABBQueryBoxes2D(new BVH2D<>(), 32, numberOfBoxes, size, minBoxSize, maxBoxSize, true, false, inserted -> false);
 
         if (false) {
             int range = 10000000;
@@ -39,6 +39,8 @@ public class BVHViewerTest {
         frame.add(new BVHCanvasPanel(bvh2D, width, height, new BVHCanvasPanel.Settings().setRenderNodes(false).setRenderBoxes(true).setRenderGrid(false)));
         frame.pack();
         frame.setVisible(true);
+        System.out.println(usedMemory() + " MB used");
+
 
         try {
             Thread.sleep(Long.MAX_VALUE);
